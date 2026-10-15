@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://rowdy9999.github.io/wcash-official/sitemap.xml
+Sitemap: https://rowdy9999.github.io/Wcash-official/sitemap.xml

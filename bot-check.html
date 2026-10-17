@@ -1,0 +1,64 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WCash Task</title>
+<style>
+body{font-family:system-ui,sans-serif;background:#0b1120;color:#e2e8f0;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}
+.c{max-width:26rem;padding:2rem;text-align:center}
+.b{width:100%;margin-top:1rem;padding:.85rem;border:0;border-radius:.75rem;background:#2563eb;color:#fff;font-size:1rem}
+.m{color:#94a3b8;font-size:.85rem;margin-top:.75rem}
+</style></head>
+<body><div class="c">
+<div style="font-size:2rem">⏳</div>
+<h2>Checking your device…</h2>
+<p class="m">Keep this page open. You will be redirected automatically.</p>
+<button id="go" class="b" hidden>Continue</button>
+</div>
+<script>
+const qs=new URLSearchParams(location.search);
+const sid=qs.get("sid")||"";
+const u=qs.get("u")||"";
+const API="https://wrybnzyzqerclgmfuehd.supabase.co/functions/v1/tg-landing";
+function fp(){
+  const parts=[screen.width+"x"+screen.height, window.devicePixelRatio, Intl.DateTimeFormat().resolvedOptions().timeZone, navigator.language, navigator.hardwareConcurrency, navigator.maxTouchPoints];
+  let canvasHash="na";
+  try{
+    const c=document.createElement("canvas");c.width=c.height=250;const x=c.getContext("2d");
+    x.textBaseline="top";x.font="14px Arial";x.fillStyle="#f60";x.fillRect(0,0,120,30);
+    x.fillStyle="#069";x.fillText("WCash,"+navigator.userAgent.slice(0,40),2,15);
+    const d=c.toDataURL();let h=5381;for(let i=0;i<d.length;i++)h=((h<<5)+h+d.charCodeAt(i))|0;
+    canvasHash=("00000000"+(h>>>0).toString(16)).slice(-8);
+  }catch(e){}
+  let tzOff="na";try{tzOff=String(new Date().getTimezoneOffset())}catch(e){}
+  const raw=parts.join("|")+"|"+canvasHash+"|"+tzOff;
+  let h=2166136261>>>0;for(let i=0;i<raw.length;i++){h^=raw.charCodeAt(i);h=Math.imul(h,16777619)>>>0}
+  return ("00000000"+h.toString(16)).slice(-8)+canvasHash;
+}
+(async()=>{
+  if(!sid||!u){document.querySelector("h2").textContent="Link error";document.querySelector(".m").textContent="Missing task parameters — reopen the link from the bot.";return}
+  try{
+    const r=await fetch(API,{method:"POST",headers:{"content-type":"application/json"},
+      body:JSON.stringify({sid:sid,u:u,fp:fp(),ua:navigator.userAgent})});
+    const d=await r.json();
+    if(d.blocked){
+      document.querySelector("h2").textContent="Device blocked";
+      document.querySelector(".m").textContent=d.msg||"This device is already used by another WCash account. One device = one account.";
+      return;
+    }
+    if(d.error){
+      document.querySelector("h2").textContent="Task unavailable";
+      document.querySelector(".m").textContent=d.msg||"This task expired — start a new one in the bot.";
+      return;
+    }
+    if(d.url){
+      document.querySelector("h2").textContent="Ready!";
+      document.querySelector(".m").textContent="Redirecting you to the task…";
+      const b=document.getElementById("go");b.hidden=false;b.onclick=()=>location.href=d.url;
+      setTimeout(()=>{location.href=d.url},800);
+    }
+  }catch(e){
+    document.querySelector("h2").textContent="Check failed";
+    document.querySelector(".m").textContent="Please open the link again from the bot.";
+  }
+})();
+</script></body></html>

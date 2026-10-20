@@ -313,7 +313,7 @@
         <div class="ttl">Refer &amp; earn</div>
         <div class="code"><b id="refcode">—</b><button id="copyBtn">Copy</button></div>
         <button class="btn ghost" id="shareBtn">Share referral link</button>
-        <div class="mini">Your friend counts after they download the app and sign up for the first time — no withdrawal needed from them.</div>
+        <div class="mini">Your friend joins through your link, passes device verification and submits their Gmail in the bot — you earn <b id="refReward">₹2</b> instantly. No app download or withdrawal needed from them.</div>
       </div>
 
       <div class="card">
@@ -850,6 +850,8 @@
     $("accName").textContent = S.me.name || "WCash user";
     $("accGmail").textContent = S.me.gmail || "—";
     $("refcode").textContent = S.me.referral_code || "—";
+    var rr = $("refReward");
+    if (rr) rr.textContent = "₹" + Number((S.me.cfg && S.me.cfg.referral_reward) || 2);
   }
 
   $("copyBtn").addEventListener("click", function () {

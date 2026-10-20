@@ -470,12 +470,15 @@
       started: started,
       dest: a.destination_url || (offer && offer.destination_url) || "",
       offer: offer,
-      landing: "https://rowdy9999.github.io/Wcash-official/bot-check.html?sid=" + a.id + "&u=" + encodeURIComponent(a.destination_url || "")
+      landing: a.landing || ("https://rowdy9999.github.io/Wcash-official/bot-check.html?sid=" + a.id + "&u=" + encodeURIComponent(a.destination_url || ""))
     };
   }
 
   function openTask(url) {
-    if (TG && TG.openLink) TG.openLink(url);
+    // Same context as the bot's link buttons (Telegram's webview) — the
+    // Watch flow's sessionStorage handoff is only reliable there.
+    if (TG && TG.openTelegramLink) TG.openTelegramLink(url);
+    else if (TG && TG.openLink) TG.openLink(url);
     else window.open(url, "_blank");
   }
 
@@ -607,7 +610,8 @@
     $("watchDur").textContent = c.watch_duration + "s";
     $("watchMeta").textContent = c.watch_cooldown + "s · " + c.watch_daily_limit + "/day";
     var ws = $("watchStart");
-    if (!c.watch_enabled) { ws.disabled = true; ws.textContent = "Watch & Earn disabled"; }
+    if (S.me.dev_failed) { ws.disabled = true; ws.textContent = "Tasks locked on this device"; }
+    else if (!c.watch_enabled) { ws.disabled = true; ws.textContent = "Watch & Earn disabled"; }
     else if (S.me.active_session && S.me.active_session.kind === "watch") {
       ws.disabled = false; ws.textContent = "Open running watch →";
     } else { ws.disabled = false; ws.textContent = "Start watching"; }
@@ -732,6 +736,11 @@
       $("wdAvail").textContent = money(m.balance);
 
       var tiles = (c.withdrawal_amount_tiles || []).filter(function (n) { return Number(n) === 20; });
+      var avail = tiles.filter(function (n) { return n >= c.withdrawal_min && n <= c.withdrawal_max && n <= m.balance; });
+      // Auto-select the first enabled chip (₹20 is the only tile) so the
+      // payout-details box is revealed without an extra tap.
+      if (avail.length && (!WD_STATE.amount || avail.indexOf(WD_STATE.amount) < 0)) WD_STATE.amount = avail[0];
+      if (!avail.length) WD_STATE.amount = null;
       $("amtChips").innerHTML = tiles.map(function (n) {
         var ok = n >= c.withdrawal_min && n <= c.withdrawal_max && n <= m.balance;
         return '<button class="chip' + (WD_STATE.amount === n ? " on" : "") + '" data-amt="' + n + '"' +

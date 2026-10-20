@@ -276,7 +276,6 @@
       <div id="wdForm" class="card hidden">
         <div class="ttl">💸 Withdraw</div>
         <div class="row"><span class="k">Available</span><span class="v" id="wdAvail">—</span></div>
-        <div class="row"><span class="k">Min · Max</span><span class="v" id="wdLimits">—</span></div>
 
         <div class="ttl" style="margin-top:14px">Amount</div>
         <div class="chips" id="amtChips"></div>
@@ -358,6 +357,11 @@
   function $(id) { return document.getElementById(id); }
   function money(x) { return "₹" + Number(x || 0).toFixed(2); }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function linkify(t) {
+    return esc(t).replace(/https?:\/\/[^\s<]+/g, function (u) {
+      return '<a href="' + u + '" target="_blank" rel="noopener" style="color:var(--blue2)">' + u + "</a>";
+    });
+  }
   function toast(m) {
     var t = $("toast"); t.textContent = m; t.classList.add("show");
     clearTimeout(t._h); t._h = setTimeout(function () { t.classList.remove("show"); }, 2600);
@@ -726,9 +730,8 @@
 
     if (c.withdrawal_enabled && !hasPending) {
       $("wdAvail").textContent = money(m.balance);
-      $("wdLimits").textContent = "₹" + c.withdrawal_min + " · ₹" + c.withdrawal_max;
 
-      var tiles = c.withdrawal_amount_tiles || [];
+      var tiles = (c.withdrawal_amount_tiles || []).filter(function (n) { return Number(n) === 20; });
       $("amtChips").innerHTML = tiles.map(function (n) {
         var ok = n >= c.withdrawal_min && n <= c.withdrawal_max && n <= m.balance;
         return '<button class="chip' + (WD_STATE.amount === n ? " on" : "") + '" data-amt="' + n + '"' +
@@ -805,7 +808,16 @@
     $("cfGo").onclick = function () {
       var b = $("cfGo"); b.disabled = true; b.textContent = "Submitting…";
       act("withdraw", { amount: WD_STATE.amount, method: WD_STATE.method, upi: detail }).then(function (d) {
-        if (d.error) { closeSheet(); toast(d.error); S.me = d; renderAll(); return; }
+        if (d.error) {
+          S.me = d; renderAll();
+          openSheet(
+            "<h3>⚠️ Withdrawal</h3>" +
+            '<div class="mini" style="color:var(--ink);font-size:14px;line-height:1.65">' + linkify(d.error) + "</div>" +
+            '<button class="btn" id="erOk">OK</button>'
+          );
+          $("erOk").onclick = closeSheet;
+          return;
+        }
         S.me = d;
         var r = d.receipt || {};
         openSheet(

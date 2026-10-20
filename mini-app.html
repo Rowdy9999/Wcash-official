@@ -192,25 +192,6 @@
     pointer-events: none; max-width: 86vw; text-align: center;
   }
   #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-  /* force-join overlay (blocking, shows only not-yet-joined channels) */
-  #fj {
-    position: fixed; inset: 0; z-index: 100; display: none;
-    background: rgba(4,8,20,.82); backdrop-filter: blur(4px);
-    align-items: center; justify-content: center; padding: 22px;
-  }
-  #fj.open { display: flex; }
-  #fjCard {
-    width: 100%; max-width: 440px; background: var(--card); border: 1px solid var(--line);
-    border-radius: 20px; padding: 20px 18px calc(16px + env(safe-area-inset-bottom));
-    max-height: 84vh; overflow-y: auto; animation: up .2s ease; text-align: center;
-  }
-  #fjCard h3 { margin: 0 0 4px; font-size: 17.5px; }
-  .fjjoin {
-    width: 100%; border: 1.5px solid var(--line); background: var(--card2); color: var(--ink);
-    border-radius: 13px; padding: 13px 14px; font-size: 14.5px; font-weight: 600;
-    cursor: pointer; margin-top: 10px;
-  }
-  .fjjoin:active { filter: brightness(1.12); }
   .hidden { display: none !important; }
 </style>
 </head>
@@ -363,14 +344,6 @@
 <div id="pre" class="state"><span class="ico">⏳</span>Opening WCash…</div>
 <div id="post" class="state hidden"><span class="ico">🔒</span><span id="postMsg"></span></div>
 <div id="sheetWrap"><div id="sheet"><div class="grab"></div><div id="sheetBody"></div></div></div>
-<div id="fj">
-  <div id="fjCard">
-    <h3>🔒 Join to continue</h3>
-    <div class="mini" style="margin-top:2px">Join <b>all</b> the channels below, then tap Verify.</div>
-    <div id="fjList"></div>
-    <button class="btn" id="fjVerify">✅ I've joined — Verify</button>
-  </div>
-</div>
 <div id="toast"></div>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -379,7 +352,7 @@
   var API = "https://wrybnzyzqerclgmfuehd.supabase.co/functions/v1/tg-mini";
   var BOT_LINK = "https://t.me/Wcashz_bot";
   var TG = window.Telegram && window.Telegram.WebApp;
-  var S = { init: "", me: null, fj: null, tab: "home", wd: { amount: 0, method: "", panel: null, tick: null } };
+  var S = { init: "", me: null, tab: "home", wd: { amount: 0, method: "", panel: null, tick: null } };
 
   function $(id) { return document.getElementById(id); }
   function money(x) { return "₹" + Number(x || 0).toFixed(2); }
@@ -400,30 +373,6 @@
   function showPre(msg, ico) { $("pre").innerHTML = '<span class="ico">' + (ico || "⚠️") + "</span>" + msg; }
   function istToday() { return new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }); }
 
-  /* ---------------- force-join overlay ---------------- */
-  function showFj(channels) {
-    S.fj = channels || [];
-    var list = $("fjList");
-    list.innerHTML = S.fj.map(function (c) {
-      return '<button class="fjjoin" data-url="' + esc(c.url) + '">➡️ Join ' + esc(c.title) + "</button>";
-    }).join("");
-    list.querySelectorAll("button").forEach(function (b) {
-      b.onclick = function () {
-        var u = b.getAttribute("data-url");
-        try { if (TG && TG.openLink) { TG.openLink(u); return; } } catch (e) {}
-        window.open(u, "_blank");
-      };
-    });
-    $("fj").classList.add("open");
-  }
-  function hideFj() { $("fj").classList.remove("open"); S.fj = null; }
-  /** Every API response carries force_join when relevant — keep the overlay in sync. */
-  function syncFj(d) {
-    if (!d || !d.force_join) return;
-    if (d.force_join.ok) { if (S.fj) hideFj(); }
-    else showFj(d.force_join.channels || []);
-  }
-
   function act(action, extra) {
     return fetch(API, {
       method: "POST",
@@ -431,7 +380,6 @@
       body: JSON.stringify(Object.assign({ initData: S.init, action: action }, extra || {}))
     }).then(function (r) {
       return r.json().then(function (d) {
-        syncFj(d);
         if (r.status === 403 && d && d.error === "not_linked") {
           showPost("Your account isn't linked yet.<br>Open the bot and send /start, link your Gmail, then reopen this app.");
           throw new Error("not_linked");
@@ -931,22 +879,6 @@
   });
   $("btnRefresh").addEventListener("click", function () {
     refresh().then(function (d) { if (d) toast("Refreshed"); });
-  });
-
-  $("fjVerify").addEventListener("click", function () {
-    var b = $("fjVerify");
-    b.disabled = true; b.textContent = "Checking…";
-    act("verify_join").then(function (d) {
-      b.disabled = false; b.textContent = "✅ I've joined — Verify";
-      if (d && d.force_join && d.force_join.ok) {
-        S.me = d; renderAll(); hideFj(); toast("Verified — thank you!");
-      } else if (d && d.force_join) {
-        showFj(d.force_join.channels || []); toast("Still not joined — check the channels above.");
-      } else if (d && d.error) toast(d.error);
-    }).catch(function () {
-      b.disabled = false; b.textContent = "✅ I've joined — Verify";
-      toast("Couldn't verify — try again.");
-    });
   });
 
   try { if (TG) { TG.ready(); TG.expand(); } } catch (e) {}

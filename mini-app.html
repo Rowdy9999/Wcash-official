@@ -10,21 +10,32 @@
     --bg: #0b1120; --card: #101a30; --card2: #12203c; --line: #1d2b47;
     --blue: #2f6bff; --blue2: #5a8bff; --green: #10b981; --amber: #f59e0b;
     --red: #ef4444; --ink: #e8eefc; --mut: #8fa0bf; --dim: #5b6d8f;
+    --navh: 62px;
   }
   html, body { margin: 0; padding: 0; background: var(--bg); }
   body {
     font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    color: var(--ink); padding: 16px 16px calc(28px + env(safe-area-inset-bottom));
-    max-width: 520px; margin: 0 auto;
+    color: var(--ink); max-width: 520px; margin: 0 auto;
+    min-height: 100vh;
   }
-  .hd { display: flex; align-items: center; gap: 12px; padding: 6px 2px 16px; }
+  .hd {
+    position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px 10px; background: rgba(11,17,32,.92); backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
   .logo {
-    width: 44px; height: 44px; border-radius: 14px; flex: 0 0 auto;
+    width: 40px; height: 40px; border-radius: 13px; flex: 0 0 auto;
     background: linear-gradient(135deg, #2f6bff, #7aa2ff);
-    display: grid; place-items: center; font-size: 22px;
+    display: grid; place-items: center; font-size: 20px;
   }
-  .hd h1 { font-size: 20px; margin: 0; letter-spacing: .4px; }
-  .hd .sub { font-size: 12.5px; color: var(--mut); margin-top: 2px; }
+  .hd h1 { font-size: 17.5px; margin: 0; flex: 1; letter-spacing: .3px; }
+  .iconbtn {
+    background: var(--card2); border: 1px solid var(--line); color: var(--ink);
+    width: 36px; height: 36px; border-radius: 11px; font-size: 16px; cursor: pointer;
+  }
+  main { padding: 14px 16px calc(var(--navh) + 24px + env(safe-area-inset-bottom)); }
+  .section { animation: fade .18s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; } }
   .card {
     background: var(--card); border: 1px solid var(--line); border-radius: 18px;
     padding: 16px; margin-bottom: 14px;
@@ -42,21 +53,94 @@
   }
   .bal .hold b { color: #ffd68a; font-size: 15px; }
   .bal .note { font-size: 11.5px; color: #cfe0ff; margin-top: 6px; }
-  .bal .wd { margin-top: 10px; font-size: 12.5px; color: #dbe7ff; display: flex; justify-content: space-between; }
+  .bal .wdrow { margin-top: 10px; font-size: 12.5px; color: #dbe7ff; display: flex; justify-content: space-between; }
+  .bal button {
+    margin-top: 14px; width: 100%; border: 0; border-radius: 13px; padding: 12px;
+    background: rgba(255,255,255,.16); color: #fff; font-size: 14.5px; font-weight: 600; cursor: pointer;
+  }
   .ttl { font-size: 13px; color: var(--mut); font-weight: 600; letter-spacing: .4px; text-transform: uppercase; margin-bottom: 10px; }
   .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 9px 0; font-size: 14.5px; }
   .row + .row { border-top: 1px solid var(--line); }
   .row .k { color: var(--mut); }
   .row .v { text-align: right; word-break: break-all; }
-  .ok { color: var(--green); } .warn { color: var(--amber); } .bad { color: var(--red); }
+  .ok { color: var(--green); } .warn { color: var(--amber); } .bad { color: var(--red); } .info { color: var(--blue2); }
   button.btn {
     width: 100%; border: 0; border-radius: 13px; padding: 13px 14px;
-    font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 4px;
+    font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 8px;
     background: var(--blue); color: #fff;
   }
   button.btn:active { filter: brightness(1.12); }
-  button.btn:disabled { opacity: .55; cursor: default; }
+  button.btn:disabled { opacity: .5; cursor: default; }
   button.ghost { background: var(--card2); border: 1px solid var(--line); color: var(--ink); }
+  .mini { font-size: 12.5px; color: var(--mut); line-height: 1.55; margin-top: 8px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .grid2 button.btn { margin-top: 0; padding: 14px 8px; font-size: 14px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    background: var(--card2); border: 1.5px solid var(--line); color: var(--ink);
+    border-radius: 999px; padding: 9px 16px; font-size: 14.5px; font-weight: 600; cursor: pointer;
+  }
+  .chip.on { border-color: var(--blue); background: rgba(47,107,255,.16); color: #cfe0ff; }
+  .chip:disabled { opacity: .38; cursor: default; }
+  .method {
+    display: flex; gap: 12px; align-items: center; background: var(--card2);
+    border: 1.5px solid var(--line); border-radius: 14px; padding: 12px 14px;
+    cursor: pointer; margin-bottom: 8px; font-size: 14.5px;
+  }
+  .method.on { border-color: var(--blue); background: rgba(47,107,255,.14); }
+  .method .dot {
+    width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--dim); flex: 0 0 auto;
+  }
+  .method.on .dot { border-color: var(--blue); background: radial-gradient(circle, var(--blue) 45%, transparent 50%); }
+  input.fld, textarea.fld {
+    width: 100%; background: var(--card2); border: 1.5px solid var(--line); color: var(--ink);
+    border-radius: 13px; padding: 13px 14px; font-size: 15px; outline: none; margin-top: 4px;
+  }
+  input.fld:focus { border-color: var(--blue); }
+  .offer {
+    display: flex; gap: 12px; align-items: center; background: var(--card2);
+    border: 1px solid var(--line); border-radius: 15px; padding: 13px 14px; margin-bottom: 10px;
+    cursor: pointer;
+  }
+  .offer .em { font-size: 24px; flex: 0 0 auto; }
+  .offer .mid { flex: 1; min-width: 0; }
+  .offer .nm { font-size: 14.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .offer .sub { font-size: 12.5px; color: var(--mut); margin-top: 2px; }
+  .offer .rw { font-size: 14.5px; font-weight: 700; color: var(--green); flex: 0 0 auto; }
+  .pill {
+    display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 11.5px;
+    font-weight: 700; text-transform: uppercase; letter-spacing: .4px;
+  }
+  .pill.pending { background: rgba(245,158,11,.16); color: #fbbf24; }
+  .pill.approved { background: rgba(59,130,246,.16); color: #93c5fd; }
+  .pill.paid { background: rgba(16,185,129,.16); color: #34d399; }
+  .pill.rejected { background: rgba(239,68,68,.16); color: #fca5a5; }
+  .wdrow2 {
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    padding: 11px 0; font-size: 14px;
+  }
+  .wdrow2 + .wdrow2 { border-top: 1px solid var(--line); }
+  .wdrow2 .rid { font-size: 12px; color: var(--dim); font-family: ui-monospace, monospace; }
+  .panel {
+    background: linear-gradient(160deg, #12224a, #0e1a35); border: 1px solid #2a3f6d;
+    border-radius: 16px; padding: 15px; margin-top: 10px;
+  }
+  .timer {
+    font-size: 30px; font-weight: 800; text-align: center; font-variant-numeric: tabular-nums;
+    color: #9ec1ff; margin: 6px 0 4px;
+  }
+  .bar { height: 7px; background: #0a1430; border-radius: 999px; overflow: hidden; margin: 8px 0 12px; }
+  .bar i { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--blue), #7aa2ff); transition: width 1s linear; }
+  .promo {
+    display: flex; gap: 12px; align-items: center; background: linear-gradient(120deg,#14264e,#12203c);
+    border: 1px dashed #2e4a87; border-radius: 16px; padding: 14px;
+  }
+  .promo .em { font-size: 26px; }
+  .promo .tx { flex: 1; font-size: 13px; color: var(--mut); line-height: 1.5; }
+  .promo a, .promo button {
+    flex: 0 0 auto; background: var(--blue); color: #fff; border: 0; border-radius: 10px;
+    padding: 9px 13px; font-size: 13px; font-weight: 600; text-decoration: none; cursor: pointer;
+  }
   .code {
     display: flex; gap: 8px; align-items: center; background: var(--card2);
     border: 1px dashed #35507f; border-radius: 12px; padding: 11px 13px; margin-bottom: 8px;
@@ -66,19 +150,45 @@
     background: var(--blue); color: #fff; border: 0; border-radius: 9px;
     padding: 8px 14px; font-size: 13.5px; font-weight: 600; cursor: pointer;
   }
-  .mini { font-size: 12.5px; color: var(--mut); line-height: 1.5; margin-top: 8px; }
-  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .grid2 button.btn { margin-top: 0; padding: 14px 8px; font-size: 14px; }
-  .ft { text-align: center; color: var(--dim); font-size: 12px; margin-top: 18px; line-height: 1.6; }
+  .ft { text-align: center; color: var(--dim); font-size: 12px; margin-top: 8px; line-height: 1.6; }
   .ft a { color: var(--blue2); text-decoration: none; }
   .state {
-    text-align: center; padding: 46px 20px; color: var(--mut); font-size: 14.5px; line-height: 1.6;
+    text-align: center; padding: 54px 22px; color: var(--mut); font-size: 14.5px; line-height: 1.6;
   }
-  .state .ico { font-size: 44px; display: block; margin-bottom: 12px; }
+  .state .ico { font-size: 46px; display: block; margin-bottom: 12px; }
+  /* bottom tab bar */
+  .tabbar {
+    position: fixed; left: 50%; transform: translateX(-50%); bottom: 0; z-index: 40;
+    width: 100%; max-width: 520px; display: grid; grid-template-columns: repeat(4, 1fr);
+    background: rgba(13,20,38,.97); backdrop-filter: blur(10px);
+    border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom);
+  }
+  .tabbar button {
+    background: none; border: 0; color: var(--dim); font-size: 11px; font-weight: 600;
+    padding: 9px 2px 8px; cursor: pointer; display: flex; flex-direction: column; gap: 3px; align-items: center;
+  }
+  .tabbar button .ic { font-size: 19px; }
+  .tabbar button.on { color: #8ab0ff; }
+  /* sheet */
+  #sheetWrap {
+    position: fixed; inset: 0; z-index: 60; display: none;
+    background: rgba(4,8,20,.66); backdrop-filter: blur(3px);
+    align-items: flex-end; justify-content: center;
+  }
+  #sheetWrap.open { display: flex; }
+  #sheet {
+    width: 100%; max-width: 520px; background: var(--card); border: 1px solid var(--line);
+    border-radius: 22px 22px 0 0; padding: 18px 18px calc(20px + env(safe-area-inset-bottom));
+    max-height: 86vh; overflow-y: auto; animation: up .2s ease;
+  }
+  @keyframes up { from { transform: translateY(40px); opacity: .4; } to { transform: none; opacity: 1; } }
+  #sheet .grab { width: 42px; height: 4px; background: #2a3a5c; border-radius: 999px; margin: 0 auto 14px; }
+  #sheet h3 { margin: 0 0 6px; font-size: 17.5px; }
   #toast {
-    position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%) translateY(80px);
+    position: fixed; left: 50%; bottom: calc(var(--navh) + 16px + env(safe-area-inset-bottom));
+    transform: translateX(-50%) translateY(80px);
     background: #05102a; border: 1px solid #2c4377; color: #fff; padding: 10px 18px;
-    border-radius: 999px; font-size: 13.5px; opacity: 0; transition: .25s; z-index: 50;
+    border-radius: 999px; font-size: 13.5px; opacity: 0; transition: .25s; z-index: 70;
     pointer-events: none; max-width: 86vw; text-align: center;
   }
   #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
@@ -90,62 +200,151 @@
 <div id="app" class="hidden">
   <div class="hd">
     <div class="logo">💵</div>
-    <div>
-      <h1>WCash</h1>
-      <div class="sub" id="hello">Mini App</div>
-    </div>
+    <h1 id="hdTitle">Home</h1>
+    <button class="iconbtn" id="btnRefresh" title="Refresh">⟳</button>
   </div>
 
-  <div class="card bal">
-    <div class="lab">Available balance</div>
-    <div class="big" id="balance">₹—</div>
-    <div class="hold" id="holdRow">
-      <span>🔒 Hold balance</span><b id="hold">₹—</b>
-    </div>
-    <div class="note" id="holdNote">Available to withdraw after verification.</div>
-    <div class="wd">
-      <span>Pending withdrawals</span><span id="wd">—</span>
-    </div>
-  </div>
+  <main>
+    <!-- ============ HOME ============ -->
+    <section id="sec-home" class="section">
+      <div class="card bal">
+        <div class="lab">Available balance</div>
+        <div class="big" id="balance">₹—</div>
+        <div class="hold hidden" id="holdRow"><span>🔒 Hold balance</span><b id="hold">₹—</b></div>
+        <div class="note hidden" id="holdNote">Available to withdraw after verification.</div>
+        <div class="wdrow"><span>Pending withdrawals</span><span id="wdCount">—</span></div>
+        <button id="homeWithdraw">Withdraw →</button>
+      </div>
 
-  <div class="card">
-    <div class="ttl">Account</div>
-    <div class="row"><span class="k">Gmail</span><span class="v" id="gmail">—</span></div>
-    <div class="row"><span class="k">Telegram</span><span class="v ok">Linked ✓</span></div>
-    <div class="mini">Withdrawals are done in the WCash app with this Gmail. Your balance is shared — bot and app show the same money.</div>
-  </div>
+      <div class="card">
+        <div class="ttl">Daily bonus</div>
+        <div class="row" id="dailyRow"><span class="k" id="dailyState">—</span></div>
+        <button class="btn" id="claimBtn">Claim daily bonus</button>
+        <div class="mini">Claim every day — added to your balance instantly.</div>
+      </div>
 
-  <div class="card">
-    <div class="ttl">Daily bonus</div>
-    <div class="row" id="dailyRow"><span class="k" id="dailyState">—</span></div>
-    <button class="btn" id="claimBtn">Claim daily bonus</button>
-    <div class="mini">Claim every day — the reward is added to your balance instantly.</div>
-  </div>
+      <div class="grid2" style="margin-bottom:14px">
+        <button class="btn ghost" data-go="earn">🎯 Earn tasks</button>
+        <button class="btn ghost" data-go="account">👤 Account</button>
+      </div>
 
-  <div class="card">
-    <div class="ttl">Refer &amp; earn</div>
-    <div class="code"><b id="refcode">—</b><button id="copyBtn">Copy</button></div>
-    <button class="btn ghost" id="shareBtn">Share referral link</button>
-    <div class="mini">Your friend counts after they download the app and sign up for the first time — no withdrawal needed from them.</div>
-  </div>
+      <div class="promo">
+        <div class="em">📱</div>
+        <div class="tx"><b style="color:#cfe0ff">More tasks in the app</b><br>Visit &amp; Earn, Shortlinks &amp; Gmail Work live in the WCash app.</div>
+        <a href="https://surl.li/iimjfw" target="_blank" rel="noopener">Open</a>
+      </div>
+    </section>
 
-  <div class="card">
-    <div class="ttl">Earn</div>
-    <div class="grid2">
-      <button class="btn" id="watchBtn">👁 Watch &amp; Earn</button>
-      <button class="btn" id="offersBtn">🎯 Offers</button>
-    </div>
-    <div class="mini">Tasks run in the bot (buttons) — tap to jump there.</div>
-  </div>
+    <!-- ============ EARN ============ -->
+    <section id="sec-earn" class="section hidden">
+      <div class="card" id="watchCard">
+        <div class="ttl">👁 Watch &amp; Earn</div>
+        <div class="row"><span class="k">Reward</span><span class="v ok" id="watchReward">₹—</span></div>
+        <div class="row"><span class="k">Task length</span><span class="v" id="watchDur">—</span></div>
+        <div class="row"><span class="k">Cooldown · daily limit</span><span class="v" id="watchMeta">—</span></div>
+        <button class="btn" id="watchStart">Start watching</button>
+        <div class="mini">Open the page, stay for the task, then verify — the reward is credited automatically. Finish tasks in the bot too; Visit &amp; Shortlink tasks stay in the app.</div>
+        <div id="watchPanel"></div>
+      </div>
 
-  <div class="ft">
-    Support: <a href="mailto:wcashsupport@gmail.com">wcashsupport@gmail.com</a><br>
-    WCash • Android app: <a href="https://surl.li/iimjfw" target="_blank" rel="noopener">surl.li/iimjfw</a>
-  </div>
+      <div class="ttl" style="margin-top:4px">🎯 Offers</div>
+      <div id="offerList"><div class="mini">Loading…</div></div>
+
+      <div class="promo">
+        <div class="em">📱</div>
+        <div class="tx"><b style="color:#cfe0ff">Visit &amp; Earn · Shortlinks · Gmail Work</b><br>These tasks are app-only — one balance everywhere.</div>
+        <a href="https://surl.li/iimjfw" target="_blank" rel="noopener">Open</a>
+      </div>
+    </section>
+
+    <!-- ============ WITHDRAW ============ -->
+    <section id="sec-withdraw" class="section hidden">
+      <div id="wdDisabled" class="card hidden">
+        <div class="ttl">💸 Withdraw</div>
+        <div class="mini">Withdrawals are paused right now — try again later.</div>
+      </div>
+
+      <div id="wdPending" class="card hidden">
+        <div class="ttl">⌛ Pending withdrawal</div>
+        <div class="row"><span class="k">Request</span><span class="v" id="wpId">—</span></div>
+        <div class="row"><span class="k">Amount</span><span class="v" id="wpAmt">—</span></div>
+        <div class="row"><span class="k">Method</span><span class="v" id="wpMethod">—</span></div>
+        <div class="row"><span class="k">Status</span><span class="v" id="wpStatus"></span></div>
+        <div class="mini">One request at a time — it must be processed before a new one.</div>
+      </div>
+
+      <div id="wdForm" class="card hidden">
+        <div class="ttl">💸 Withdraw</div>
+        <div class="row"><span class="k">Available</span><span class="v" id="wdAvail">—</span></div>
+        <div class="row"><span class="k">Min · Max</span><span class="v" id="wdLimits">—</span></div>
+
+        <div class="ttl" style="margin-top:14px">Amount</div>
+        <div class="chips" id="amtChips"></div>
+
+        <div class="ttl" style="margin-top:16px">Method</div>
+        <div id="methodList"></div>
+
+        <div id="detailWrap" class="hidden">
+          <div class="ttl" id="detailLab">Payout details</div>
+          <input class="fld" id="detailIn" autocomplete="off">
+          <div class="mini" id="detailHint"></div>
+        </div>
+
+        <button class="btn" id="wdSubmit" disabled>Review withdrawal →</button>
+        <div class="mini">Also available in the bot (Withdraw button) and the WCash app — same balance everywhere. Payouts go to the Gmail linked to your account.</div>
+      </div>
+
+      <div class="card" id="histCard">
+        <div class="ttl">History</div>
+        <div id="wdHistory"><div class="mini">No withdrawals yet.</div></div>
+      </div>
+    </section>
+
+    <!-- ============ ACCOUNT ============ -->
+    <section id="sec-account" class="section hidden">
+      <div class="card">
+        <div class="ttl">Account</div>
+        <div class="row"><span class="k">Name</span><span class="v" id="accName">—</span></div>
+        <div class="row"><span class="k">Gmail</span><span class="v" id="accGmail">—</span></div>
+        <div class="row"><span class="k">Telegram</span><span class="v ok">Linked ✓</span></div>
+        <div class="mini">Withdrawals (bot, Mini App &amp; app) pay to this Gmail. Balance is shared everywhere.</div>
+      </div>
+
+      <div class="card">
+        <div class="ttl">Refer &amp; earn</div>
+        <div class="code"><b id="refcode">—</b><button id="copyBtn">Copy</button></div>
+        <button class="btn ghost" id="shareBtn">Share referral link</button>
+        <div class="mini">Your friend counts after they download the app and sign up for the first time — no withdrawal needed from them.</div>
+      </div>
+
+      <div class="card">
+        <div class="ttl">Support</div>
+        <div class="row"><span class="k">Email</span><span class="v"><a href="mailto:wcashsupport@gmail.com" style="color:var(--blue2)">wcashsupport@gmail.com</a></span></div>
+        <div class="row"><span class="k">Telegram</span><span class="v"><a href="https://t.me/wcash_official" target="_blank" rel="noopener" style="color:var(--blue2)">@wcash_official</a></span></div>
+        <div class="row"><span class="k">YouTube</span><span class="v"><a href="https://youtube.com/@wcashofficial" target="_blank" rel="noopener" style="color:var(--blue2)">@wcashofficial</a></span></div>
+      </div>
+
+      <div class="promo">
+        <div class="em">📲</div>
+        <div class="tx"><b style="color:#cfe0ff">WCash Android app</b><br>Watch, visit &amp; shortlink tasks — full rewards.</div>
+        <a href="https://surl.li/iimjfw" target="_blank" rel="noopener">Download</a>
+      </div>
+
+      <div class="ft">WCash Mini App · balance shared with the bot &amp; app</div>
+    </section>
+  </main>
+
+  <nav class="tabbar">
+    <button data-tab="home" class="on"><span class="ic">🏠</span>Home</button>
+    <button data-tab="earn"><span class="ic">🎯</span>Earn</button>
+    <button data-tab="withdraw"><span class="ic">💸</span>Withdraw</button>
+    <button data-tab="account"><span class="ic">👤</span>Account</button>
+  </nav>
 </div>
 
 <div id="pre" class="state"><span class="ico">⏳</span>Opening WCash…</div>
 <div id="post" class="state hidden"><span class="ico">🔒</span><span id="postMsg"></span></div>
+<div id="sheetWrap"><div id="sheet"><div class="grab"></div><div id="sheetBody"></div></div></div>
 <div id="toast"></div>
 
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -154,35 +353,77 @@
   var API = "https://wrybnzyzqerclgmfuehd.supabase.co/functions/v1/tg-mini";
   var BOT_LINK = "https://t.me/Wcashz_bot";
   var TG = window.Telegram && window.Telegram.WebApp;
-  var data = null;
+  var S = { init: "", me: null, tab: "home", wd: { amount: 0, method: "", panel: null, tick: null } };
 
   function $(id) { return document.getElementById(id); }
   function money(x) { return "₹" + Number(x || 0).toFixed(2); }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   function toast(m) {
     var t = $("toast"); t.textContent = m; t.classList.add("show");
-    clearTimeout(t._h); t._h = setTimeout(function () { t.classList.remove("show"); }, 2400);
+    clearTimeout(t._h); t._h = setTimeout(function () { t.classList.remove("show"); }, 2600);
   }
   function showPost(msg) {
     $("pre").classList.add("hidden"); $("app").classList.add("hidden");
     $("postMsg").innerHTML = msg; $("post").classList.remove("hidden");
   }
+  function showPre(msg, ico) { $("pre").innerHTML = '<span class="ico">' + (ico || "⚠️") + "</span>" + msg; }
+  function istToday() { return new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" }); }
 
-  function istToday() {
-    return new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+  function act(action, extra) {
+    return fetch(API, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(Object.assign({ initData: S.init, action: action }, extra || {}))
+    }).then(function (r) {
+      return r.json().then(function (d) {
+        if (r.status === 403 && d && d.error === "not_linked") {
+          showPost("Your account isn't linked yet.<br>Open the bot and send /start, link your Gmail, then reopen this app.");
+          throw new Error("not_linked");
+        }
+        if (r.status === 401 && d && d.error) {
+          showPre(esc(d.error), "⚠️");
+          throw new Error(d.error);
+        }
+        return d;
+      });
+    });
   }
 
-  function render() {
-    $("hello").textContent = data.name ? data.name + " · you" : "Mini App";
-    $("balance").textContent = money(data.balance);
-    var hold = Number(data.hold_balance || 0);
+  function refresh() {
+    return act("me").then(function (d) {
+      if (d.error) { toast(d.error); return null; }
+      S.me = d; renderAll(); return d;
+    });
+  }
+
+  /* ---------------- router ---------------- */
+  var TITLES = { home: "Home", earn: "Earn", withdraw: "Withdraw", account: "Account" };
+  function go(tab) {
+    S.tab = tab;
+    ["home", "earn", "withdraw", "account"].forEach(function (t) {
+      $("sec-" + t).classList.toggle("hidden", t !== tab);
+    });
+    $("hdTitle").textContent = TITLES[tab];
+    document.querySelectorAll(".tabbar button").forEach(function (b) {
+      b.classList.toggle("on", b.dataset.tab === tab);
+    });
+    if (tab === "home" || tab === "earn" || tab === "withdraw") refresh().then(function () {
+      if (tab === "earn") resumeActivePanel();
+    });
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------------- Home ---------------- */
+  function renderHome() {
+    var m = S.me;
+    $("balance").textContent = money(m.balance);
+    var hold = Number(m.hold_balance || 0);
     $("hold").textContent = money(hold);
     $("holdRow").classList.toggle("hidden", hold <= 0);
     $("holdNote").classList.toggle("hidden", hold <= 0);
-    $("wd").textContent = String(data.pending_withdrawals || 0);
-    $("gmail").textContent = data.gmail || "—";
-    $("refcode").textContent = data.referral_code || "—";
+    $("wdCount").textContent = String(m.pending_withdrawals || 0);
 
-    var lb = data.last_bonus;
+    var lb = m.last_bonus;
     var claimedToday = lb && lb.bonus_date === istToday();
     $("dailyState").innerHTML = claimedToday
       ? '<span class="ok">Claimed today ✓</span> · ' + money(lb.amount)
@@ -191,67 +432,407 @@
     $("claimBtn").textContent = claimedToday ? "Come back tomorrow" : "Claim daily bonus";
   }
 
-  function handle(d) {
-    if (d && d.error) {
-      if (d.error === "not_linked") {
-        showPost("Your account isn't linked yet.\nOpen the bot and send /start, link your Gmail, then reopen this app.");
-      } else {
-        showPre(d.error, "⚠️");
-      }
-      return false;
-    }
-    data = d;
-    $("pre").classList.add("hidden");
-    $("post").classList.add("hidden");
-    $("app").classList.remove("hidden");
-    render();
-    return true;
-  }
-
-  function showPre(msg, ico) {
-    $("pre").innerHTML = '<span class="ico">' + (ico || "⚠️") + "</span>" + msg;
-  }
-
-  function call(body) {
-    return fetch(API, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(body)
-    }).then(function (r) { return r.json(); });
-  }
-
-  // ---- boot ----
-  try { if (TG) { TG.ready(); TG.expand(); } } catch (e) {}
-
-  var init = TG ? (TG.initData || "") : "";
-  if (!init) {
-    showPre("This page only works inside Telegram.<br>Open it from the bot's menu button (≡) or its Mini App link.", "ℹ️");
-  } else {
-    call({ initData: init }).then(handle).catch(function () {
-      showPre("Couldn't reach WCash — check your connection and reopen the app.", "🌐");
-    });
-  }
-
-  // ---- claim ----
   $("claimBtn").addEventListener("click", function () {
-    if (!data) return;
     var b = $("claimBtn"); b.disabled = true;
-    call({ initData: init, action: "claim_daily" }).then(function (d) {
-      if (!d || d.error) {
-        toast((d && d.error) || "Couldn't claim — try again.");
-        b.disabled = false;
-        return;
-      }
+    act("claim_daily").then(function (d) {
+      if (d && d.error) { toast(d.error); renderHome(); return; }
+      S.me = d; renderAll();
       var c = d.claim || {};
       var rew = c.reward != null ? c.reward : c.amount;
-      handle(d);
-      toast("Bonus " + money(rew != null ? rew : 0) + " added to your balance 🎉");
-    }).catch(function () { toast("Network error — try again."); b.disabled = false; });
+      toast("Bonus " + money(rew != null ? rew : 0) + " added 🎉");
+    }).catch(function () { toast("Network error — try again."); renderHome(); });
   });
 
-  // ---- referral ----
+  $("homeWithdraw").addEventListener("click", function () { go("withdraw"); });
+  document.querySelectorAll("[data-go]").forEach(function (b) {
+    b.addEventListener("click", function () { go(b.dataset.go); });
+  });
+
+  /* ---------------- Earn: shared session panel ---------------- */
+  function normSession() {
+    var a = S.me && S.me.active_session;
+    if (!a) return null;
+    var offer = null;
+    if (a.offer_id) {
+      offer = (S.me.offers || []).filter(function (o) { return o.id === a.offer_id; })[0] || null;
+    }
+    var dur = Number(a.required_seconds || (offer && offer.required_seconds) || S.me.cfg.watch_duration || 10);
+    var started = a.started_at ? new Date(a.started_at).getTime() : Date.now();
+    return {
+      sid: a.id,
+      kind: a.kind,
+      reward: Number(a.reward_amount || (offer && offer.reward_amount) || 0),
+      dur: dur,
+      started: started,
+      dest: a.destination_url || (offer && offer.destination_url) || "",
+      offer: offer,
+      landing: "https://rowdy9999.github.io/Wcash-official/bot-check.html?sid=" + a.id + "&u=" + encodeURIComponent(a.destination_url || "")
+    };
+  }
+
+  function openTask(url) {
+    if (TG && TG.openLink) TG.openLink(url);
+    else window.open(url, "_blank");
+  }
+
+  function renderPanel(host, p) {
+    if (!p) { host.innerHTML = ""; return; }
+    var isWatch = p.kind === "watch";
+    var shot = p.offer && p.offer.task_type === "screenshot";
+    host.innerHTML =
+      '<div class="panel">' +
+        '<div class="ttl">' + (isWatch ? "👁 Watch in progress" : "🎯 " + esc(p.offer ? p.offer.title : "Task in progress")) + '</div>' +
+        '<div class="mini" style="margin-top:0">Reward <b class="ok">' + money(p.reward) + '</b>' +
+          (shot ? " · screenshot task" : " · " + p.dur + "s task") + '</div>' +
+        (shot ? "" :
+          '<div class="timer" id="tmr">–</div><div class="bar"><i id="tmrBar"></i></div>') +
+        '<button class="btn" id="pOpen">🌐 Open task</button>' +
+        (isWatch
+          ? '<button class="btn ghost" id="pCheck">I\'m done — check status</button>'
+          : (shot
+              ? '<button class="btn ghost" id="pShot" disabled>📸 Choose screenshot (after finishing)</button>'
+              : '<button class="btn" id="pClaim" disabled>Claim reward</button>')) +
+        (isWatch ? '<div class="mini">Stay on the page for the full task, tap Verify there, then check here.</div>' :
+          shot ? '<div class="mini">Finish the task, then send your screenshot here for review.</div>' :
+                 '<div class="mini">Stay for the whole task, then claim — credited instantly.</div>') +
+      "</div>";
+
+    $("pOpen").onclick = function () { openTask(p.landing); };
+
+    if (isWatch) {
+      $("pCheck").onclick = function () {
+        var b = $("pCheck"); b.disabled = true; b.textContent = "Checking…";
+        act("watch_status").then(function (d) {
+          b.disabled = false; b.textContent = "I'm done — check status";
+          var w = d.watch;
+          if (w && w.status === "completed") {
+            toast("✅ " + money(w.reward_amount) + " credited (balance " + money(d.balance) + ")");
+            S.me.balance = d.balance;
+            clearInterval(S.wd.tick); S.wd.panel = null; $("watchPanel").innerHTML = "";
+            renderAll();
+          } else if (w && w.status === "active") {
+            toast("Still running — stay on the page, then check again.");
+          } else {
+            toast("That session expired — start a new one.");
+            clearInterval(S.wd.tick); S.wd.panel = null; $("watchPanel").innerHTML = "";
+          }
+        }).catch(function () { b.disabled = false; b.textContent = "I'm done — check status"; toast("Network error."); });
+      };
+    } else if (shot) {
+      var inp = document.createElement("input");
+      inp.type = "file"; inp.accept = "image/*"; inp.style.display = "none";
+      host.appendChild(inp);
+      var sb = $("pShot");
+      sb.disabled = false;
+      sb.onclick = function () { inp.click(); };
+      inp.onchange = function () {
+        var f = inp.files && inp.files[0];
+        if (!f) return;
+        if (f.size > 8 * 1024 * 1024) { toast("Image must be under 8 MB."); return; }
+        sb.disabled = true; sb.textContent = "Reading…";
+        var fr = new FileReader();
+        fr.onload = function () {
+          var b64 = String(fr.result).split(",")[1] || "";
+          sb.textContent = "Submit screenshot…";
+          act("submit_screenshot", { session_id: p.sid, image: b64 }).then(function (d) {
+            if (d.error) { sb.disabled = false; sb.textContent = "📸 Choose screenshot"; toast(d.error); return; }
+            S.me = d; renderAll();
+            $("watchPanel").innerHTML = "";
+            S.wd.panel = null;
+            var r = d.result || {};
+            if (r.type === "submission_pending") toast("Submitted ✅ — in review; reward lands after approval.");
+            else toast("✅ " + money(r.reward) + " credited!");
+            closeSheet();
+          }).catch(function () { sb.disabled = false; sb.textContent = "📸 Choose screenshot"; toast("Network error."); });
+        };
+        fr.readAsDataURL(f);
+      };
+    } else {
+      var claim = $("pClaim");
+      var elapsedMs = p.started + p.dur * 1000 - Date.now();
+      var tick = function () {
+        var left = Math.max(0, p.started + p.dur * 1000 - Date.now());
+        var t = $("tmr"), bar = $("tmrBar");
+        if (!t) { clearInterval(S.wd.tick); return; }
+        var s = Math.ceil(left / 1000);
+        t.textContent = (s > 9 ? "" : "0") + Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2);
+        bar.style.width = Math.min(100, (1 - left / (p.dur * 1000)) * 100) + "%";
+        if (left <= 0) {
+          clearInterval(S.wd.tick);
+          t.textContent = "Ready!";
+          claim.disabled = false;
+        }
+      };
+      clearInterval(S.wd.tick);
+      S.wd.tick = setInterval(tick, 1000);
+      tick();
+      claim.onclick = function () {
+        claim.disabled = true; claim.textContent = "Claiming…";
+        act("claim_offer", { session_id: p.sid }).then(function (d) {
+          if (d.error) {
+            toast(d.error);
+            claim.disabled = false; claim.textContent = "Claim reward";
+            return;
+          }
+          S.me = d; renderAll();
+          clearInterval(S.wd.tick); S.wd.panel = null;
+          $("watchPanel").innerHTML = "";
+          closeSheet();
+          var r = d.result || {};
+          toast("✅ " + money(r.reward) + " credited (balance " + money(r.balance) + ")");
+        }).catch(function () { claim.disabled = false; claim.textContent = "Claim reward"; toast("Network error."); });
+      };
+    }
+  }
+
+  function resumeActivePanel() {
+    var p = normSession();
+    if (!p) {
+      $("watchPanel").innerHTML = "";
+      S.wd.panel = null;
+      return;
+    }
+    if (p.kind === "watch") { S.wd.panel = p; renderPanel($("watchPanel"), p); }
+    else { /* offer panels open through the offer sheet */ S.wd.panel = p; }
+  }
+
+  /* ---------------- Earn: watch card ---------------- */
+  function renderEarn() {
+    var c = S.me.cfg;
+    $("watchReward").textContent = money(c.watch_reward);
+    $("watchDur").textContent = c.watch_duration + "s";
+    $("watchMeta").textContent = c.watch_cooldown + "s · " + c.watch_daily_limit + "/day";
+    var ws = $("watchStart");
+    if (!c.watch_enabled) { ws.disabled = true; ws.textContent = "Watch & Earn disabled"; }
+    else if (S.me.active_session && S.me.active_session.kind === "watch") {
+      ws.disabled = false; ws.textContent = "Open running watch →";
+    } else { ws.disabled = false; ws.textContent = "Start watching"; }
+
+    // offers
+    var offers = S.me.offers || [];
+    var claimed = S.me.claimed_offers || [];
+    var runningId = S.me.active_session && S.me.active_session.offer_id;
+    var host = $("offerList");
+    if (!offers.length) { host.innerHTML = '<div class="mini">No offers right now — check back later.</div>'; }
+    else {
+      host.innerHTML = offers.map(function (o) {
+        var done = claimed.indexOf(o.id) >= 0;
+        var running = runningId === o.id;
+        return '<div class="offer" data-offer="' + o.id + '">' +
+          '<span class="em">' + esc(o.icon || "🎯") + "</span>" +
+          '<div class="mid"><div class="nm">' + esc(o.title) + "</div>" +
+          '<div class="sub">' + (o.task_type === "screenshot" ? "📸 screenshot" : "⏳ " + o.required_seconds + "s") +
+          (running ? ' · <span class="info">running…</span>' : done ? ' · <span class="ok">✓ done</span>' : "") + "</div></div>" +
+          '<span class="rw">' + money(o.reward_amount) + "</span></div>";
+      }).join("");
+      host.querySelectorAll("[data-offer]").forEach(function (el) {
+        el.onclick = function () { openOffer(el.dataset.offer); };
+      });
+    }
+    resumeActivePanel();
+  }
+
+  $("watchStart").addEventListener("click", function () {
+    var running = normSession();
+    if (running && running.kind === "watch") { renderPanel($("watchPanel"), running); return; }
+    var b = $("watchStart"); b.disabled = true;
+    act("start_watch").then(function (d) {
+      b.disabled = false;
+      if (d.error) { toast(d.error); return; }
+      var s = d.session;
+      var p = {
+        sid: s.session_id, kind: "watch",
+        reward: Number(s.reward || 0),
+        dur: Number(s.duration || S.me.cfg.watch_duration),
+        started: s.started_at ? new Date(s.started_at).getTime() : Date.now(),
+        dest: String(s.destination || ""),
+        offer: null,
+        landing: d.landing
+      };
+      renderPanel($("watchPanel"), p);
+      toast("Task started — open it and verify on the page.");
+    }).catch(function () { b.disabled = false; toast("Network error."); });
+  });
+
+  /* ---------------- Earn: offer sheet ---------------- */
+  function openSheet(html) { $("sheetBody").innerHTML = html; $("sheetWrap").classList.add("open"); }
+  function closeSheet() { $("sheetWrap").classList.remove("open"); clearInterval(S.wd.tick); }
+  $("sheetWrap").addEventListener("click", function (e) { if (e.target === $("sheetWrap")) closeSheet(); });
+
+  function openOffer(id) {
+    var o = (S.me.offers || []).filter(function (x) { return x.id === id; })[0];
+    if (!o) return;
+    var done = (S.me.claimed_offers || []).indexOf(id) >= 0;
+    var shot = o.task_type === "screenshot";
+    openSheet(
+      '<h3>' + esc(o.icon || "🎯") + " " + esc(o.title) + "</h3>" +
+      '<div class="mini" style="margin-bottom:8px">' + esc(o.description || "Complete this task to earn.") + "</div>" +
+      '<div class="row"><span class="k">Reward</span><span class="v ok">' + money(o.reward_amount) + "</span></div>" +
+      '<div class="row"><span class="k">Task</span><span class="v">' + (shot ? "Screenshot review" : o.required_seconds + " seconds") + "</span></div>" +
+      (done ? '<div class="mini ok">✓ You already completed this offer.</div>'
+            : '<button class="btn" id="ofStart">Start task</button><div id="ofPanel"></div>') +
+      '<button class="btn ghost" id="ofClose" style="margin-top:6px">Close</button>'
+    );
+    $("ofClose").onclick = closeSheet;
+    if (done) return;
+
+    var running = normSession();
+    if (running && running.kind === "offer" && running.offer && running.offer.id === id) {
+      startOfferUI(o, running, true);
+      return;
+    }
+    $("ofStart").onclick = function () {
+      var b = $("ofStart"); b.disabled = true; b.textContent = "Starting…";
+      act("start_offer", { offer_id: id }).then(function (d) {
+        if (d.error) { b.disabled = false; b.textContent = "Start task"; toast(d.error); return; }
+        var s = d.session;
+        var p = {
+          sid: s.session_id, kind: "offer", offer: o,
+          reward: Number(s.reward || o.reward_amount),
+          dur: Number(s.duration || o.required_seconds),
+          started: s.started_at ? new Date(s.started_at).getTime() : Date.now(),
+          dest: String(s.destination || ""),
+          landing: d.landing
+        };
+        startOfferUI(o, p, false);
+      }).catch(function () { b.disabled = false; b.textContent = "Start task"; toast("Network error."); });
+    };
+  }
+
+  function startOfferUI(o, p, resumed) {
+    var b = $("ofStart");
+    if (b) { b.style.display = "none"; }
+    renderPanel($("ofPanel"), p);
+    if (resumed) toast("Resumed your running task.");
+  }
+
+  /* ---------------- Withdraw ---------------- */
+  var WD_STATE = { amount: 0, method: "" };
+
+  function renderWithdraw() {
+    var m = S.me, c = m.cfg;
+    $("wdDisabled").classList.toggle("hidden", c.withdrawal_enabled);
+    var pending = (m.withdrawals || []).filter(function (w) { return w.status === "pending"; })[0];
+    var hasPending = !!pending || Number(m.pending_withdrawals || 0) > 0;
+    $("wdPending").classList.toggle("hidden", !hasPending);
+    $("wdForm").classList.toggle("hidden", !c.withdrawal_enabled || hasPending);
+
+    if (pending) {
+      $("wpId").textContent = pending.request_id || "—";
+      $("wpAmt").textContent = money(pending.amount);
+      $("wpMethod").textContent = methodLabel(String(pending.method || ""));
+      $("wpStatus").innerHTML = '<span class="pill ' + esc(pending.status) + '">' + esc(pending.status) + "</span>";
+    }
+
+    if (c.withdrawal_enabled && !hasPending) {
+      $("wdAvail").textContent = money(m.balance);
+      $("wdLimits").textContent = "₹" + c.withdrawal_min + " · ₹" + c.withdrawal_max;
+
+      var tiles = c.withdrawal_amount_tiles || [];
+      $("amtChips").innerHTML = tiles.map(function (n) {
+        var ok = n >= c.withdrawal_min && n <= c.withdrawal_max && n <= m.balance;
+        return '<button class="chip' + (WD_STATE.amount === n ? " on" : "") + '" data-amt="' + n + '"' +
+          (ok ? "" : " disabled") + ">₹" + n + "</button>";
+      }).join("") || '<span class="mini">No amounts available.</span>';
+      $("amtChips").querySelectorAll("[data-amt]").forEach(function (b2) {
+        b2.onclick = function () { WD_STATE.amount = Number(b2.dataset.amt); renderWithdraw(); };
+      });
+
+      var methods = c.withdrawal_methods || [];
+      if (!WD_STATE.method || !methods.some(function (x) { return x.value === WD_STATE.method; })) {
+        WD_STATE.method = methods.length ? methods[0].value : "upi";
+      }
+      $("methodList").innerHTML = methods.map(function (mm) {
+        return '<div class="method' + (WD_STATE.method === mm.value ? " on" : "") + '" data-m="' + esc(mm.value) + '">' +
+          '<span class="dot"></span><span>' + esc(mm.label) + "</span></div>";
+      }).join("");
+      $("methodList").querySelectorAll("[data-m]").forEach(function (el) {
+        el.onclick = function () { WD_STATE.method = el.dataset.m; renderWithdraw(); };
+      });
+
+      var mm = methods.filter(function (x) { return x.value === WD_STATE.method; })[0] || {};
+      $("detailWrap").classList.toggle("hidden", !WD_STATE.amount);
+      $("detailLab").textContent = mm.prompt || "Payout details";
+      $("detailHint").textContent = (mm.hint ? "e.g. " + mm.hint + " · " : "") +
+        (WD_STATE.method === "upi" ? "must look like name@bank" : "the email on your payout account");
+
+      var detail = $("detailIn").value.trim();
+      var validDetail = WD_STATE.method === "upi"
+        ? /^[a-zA-Z0-9._-]{2,100}@[a-zA-Z0-9.-]{2,64}$/.test(detail)
+        : detail.length > 0 && detail.length <= 128;
+      $("wdSubmit").disabled = !(WD_STATE.amount && validDetail);
+    }
+
+    var hist = (m.withdrawals || []);
+    $("wdHistory").innerHTML = !hist.length
+      ? '<div class="mini">No withdrawals yet.</div>'
+      : hist.map(function (w) {
+          return '<div class="wdrow2"><div><div><b>' + money(w.amount) + "</b> · " + esc(methodLabel(String(w.method || ""))) + "</div>" +
+            '<div class="rid">' + esc(w.request_id || "") + " · " + new Date(w.created_at).toLocaleDateString() + "</div></div>" +
+            '<span class="pill ' + esc(w.status) + '">' + esc(w.status) + "</span></div>";
+        }).join("");
+  }
+
+  function methodLabel(v) {
+    var methods = (S.me && S.me.cfg.withdrawal_methods) || [];
+    var mm = methods.filter(function (x) { return x.value === v; })[0];
+    return mm ? mm.label : v;
+  }
+
+  $("detailIn").addEventListener("input", function () { if (WD_STATE.amount) renderWithdrawFocus(); });
+  function renderWithdrawFocus() {
+    var v = $("detailIn").value;
+    renderWithdraw();
+    $("detailIn").value = v;
+    $("detailIn").focus();
+  }
+
+  $("wdSubmit").addEventListener("click", function () {
+    var c = S.me.cfg;
+    var detail = $("detailIn").value.trim();
+    var after = S.me.balance - WD_STATE.amount;
+    openSheet(
+      "<h3>📝 Confirm withdrawal</h3>" +
+      '<div class="row"><span class="k">Amount</span><span class="v"><b>' + money(WD_STATE.amount) + "</b></span></div>" +
+      '<div class="row"><span class="k">Method</span><span class="v">' + esc(methodLabel(WD_STATE.method)) + "</span></div>" +
+      '<div class="row"><span class="k">Details</span><span class="v"><code>' + esc(detail) + "</code></span></div>" +
+      '<div class="row"><span class="k">Balance after</span><span class="v">' + money(after) + "</span></div>" +
+      '<div class="mini">Payout is reviewed, then sent to the details above. One pending request at a time.</div>' +
+      '<button class="btn" id="cfGo">✅ Submit withdrawal</button>' +
+      '<button class="btn ghost" id="cfNo" style="margin-top:6px">Back</button>'
+    );
+    $("cfNo").onclick = closeSheet;
+    $("cfGo").onclick = function () {
+      var b = $("cfGo"); b.disabled = true; b.textContent = "Submitting…";
+      act("withdraw", { amount: WD_STATE.amount, method: WD_STATE.method, upi: detail }).then(function (d) {
+        if (d.error) { closeSheet(); toast(d.error); S.me = d; renderAll(); return; }
+        S.me = d;
+        var r = d.receipt || {};
+        openSheet(
+          "<h3>✅ Withdrawal submitted</h3>" +
+          '<div class="row"><span class="k">Request</span><span class="v"><code>' + esc(r.request_id || "") + "</code></span></div>" +
+          '<div class="row"><span class="k">Amount</span><span class="v"><b>' + money(r.amount) + "</b></span></div>" +
+          '<div class="row"><span class="k">Status</span><span class="v"><span class="pill pending">pending</span></span></div>' +
+          '<div class="row"><span class="k">Balance</span><span class="v">' + money(r.balance) + "</span></div>" +
+          '<div class="mini">Track it here or in the WCash app → Wallet. Payouts also work from the bot\'s Withdraw button.</div>' +
+          '<button class="btn" id="rcDone">Done</button>'
+        );
+        WD_STATE.amount = 0; $("detailIn").value = "";
+        renderAll();
+        $("rcDone").onclick = closeSheet;
+      }).catch(function () { b.disabled = false; b.textContent = "✅ Submit withdrawal"; toast("Network error."); });
+    };
+  });
+
+  /* ---------------- Account ---------------- */
+  function renderAccount() {
+    $("accName").textContent = S.me.name || "WCash user";
+    $("accGmail").textContent = S.me.gmail || "—";
+    $("refcode").textContent = S.me.referral_code || "—";
+  }
+
   $("copyBtn").addEventListener("click", function () {
-    var code = (data && data.referral_code) || "";
+    var code = S.me.referral_code || "";
     if (!code) return;
     var done = function () { toast("Code copied"); };
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -266,21 +847,46 @@
   });
 
   $("shareBtn").addEventListener("click", function () {
-    var code = (data && data.referral_code) || "";
+    var code = S.me.referral_code || "";
     if (!code) return;
     var link = BOT_LINK + "?start=" + code;
     var text = "WCash — watch videos & earn real money 💰\nUse my referral: " + link;
-    if (TG && TG.openTelegramLink) TG.openTelegramLink("https://t.me/share/url?url=" + encodeURIComponent(link) + "&text=" + encodeURIComponent(text));
-    else window.open("https://t.me/share/url?url=" + encodeURIComponent(link) + "&text=" + encodeURIComponent(text), "_blank");
+    var url = "https://t.me/share/url?url=" + encodeURIComponent(link) + "&text=" + encodeURIComponent(text);
+    if (TG && TG.openTelegramLink) TG.openTelegramLink(url);
+    else window.open(url, "_blank");
   });
 
-  // ---- earn ----
-  function openBot() {
-    if (TG && TG.openTelegramLink) TG.openTelegramLink(BOT_LINK);
-    else window.open(BOT_LINK, "_blank");
+  /* ---------------- boot ---------------- */
+  function renderAll() {
+    if (!S.me) return;
+    renderHome(); renderEarn(); renderWithdraw(); renderAccount();
   }
-  $("watchBtn").addEventListener("click", openBot);
-  $("offersBtn").addEventListener("click", openBot);
+
+  document.querySelectorAll(".tabbar button").forEach(function (b) {
+    b.addEventListener("click", function () { go(b.dataset.tab); });
+  });
+  $("btnRefresh").addEventListener("click", function () {
+    refresh().then(function (d) { if (d) toast("Refreshed"); });
+  });
+
+  try { if (TG) { TG.ready(); TG.expand(); } } catch (e) {}
+  S.init = TG ? (TG.initData || "") : "";
+  if (!S.init) {
+    showPre("This page only works inside Telegram.<br>Open it from the bot's menu button or its Mini App link.", "ℹ️");
+  } else {
+    act("me").then(function (d) {
+      if (d.error) { showPre(esc(d.error), "⚠️"); return; }
+      S.me = d;
+      $("pre").classList.add("hidden");
+      $("post").classList.add("hidden");
+      $("app").classList.remove("hidden");
+      renderAll();
+      resumeActivePanel();
+    }).catch(function (e) {
+      if (e && e.message === "not_linked") return;
+      showPre("Couldn't reach WCash — check your connection and reopen the app.", "🌐");
+    });
+  }
 })();
 </script>
 </body>

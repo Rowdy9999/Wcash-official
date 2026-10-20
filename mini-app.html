@@ -312,6 +312,7 @@
       <div class="card">
         <div class="ttl">Refer &amp; earn</div>
         <div class="code"><b id="refcode">—</b><button id="copyBtn">Copy</button></div>
+        <div class="code"><b id="reflink" style="font-size:13px;letter-spacing:.3px;word-break:break-all">—</b><button id="copyLinkBtn">Copy link</button></div>
         <button class="btn ghost" id="shareBtn">Share referral link</button>
         <div class="mini">Your friend joins through your link, passes device verification and submits their Gmail in the bot — you earn <b id="refReward">₹2</b> instantly. No app download or withdrawal needed from them.</div>
       </div>
@@ -475,11 +476,15 @@
   }
 
   function openTask(url) {
-    // Same context as the bot's link buttons (Telegram's webview) — the
-    // Watch flow's sessionStorage handoff is only reliable there.
-    if (TG && TG.openTelegramLink) TG.openTelegramLink(url);
-    else if (TG && TG.openLink) TG.openLink(url);
-    else window.open(url, "_blank");
+    // In Telegram, external URLs must go through openLink — openTelegramLink
+    // only handles t.me links and silently ignores anything else (that's why
+    // "Open task" looked dead). Outside Telegram, fall back to a new tab.
+    if (!url) { toast("Task link missing — reopen the task."); return; }
+    var inTg = !!(TG && TG.initData && TG.initData.length);
+    var isTgLink = /^(tg:\/\/|https?:\/\/(www\.)?t\.me\/)/i.test(url);
+    if (inTg && isTgLink && TG.openTelegramLink) { TG.openTelegramLink(url); return; }
+    if (inTg && TG.openLink) { TG.openLink(url); return; }
+    window.open(url, "_blank");
   }
 
   function renderPanel(host, p) {
@@ -849,24 +854,35 @@
   function renderAccount() {
     $("accName").textContent = S.me.name || "WCash user";
     $("accGmail").textContent = S.me.gmail || "—";
-    $("refcode").textContent = S.me.referral_code || "—";
+    var code = S.me.referral_code || "";
+    $("refcode").textContent = code || "—";
+    var rl = $("reflink");
+    if (rl) rl.textContent = code ? (BOT_LINK + "?start=" + code) : "—";
     var rr = $("refReward");
     if (rr) rr.textContent = "₹" + Number((S.me.cfg && S.me.cfg.referral_reward) || 2);
   }
 
-  $("copyBtn").addEventListener("click", function () {
-    var code = S.me.referral_code || "";
-    if (!code) return;
-    var done = function () { toast("Code copied"); };
+  function copyText(text, label) {
+    if (!text) return;
+    var done = function () { toast(label + " copied"); };
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(code).then(done).catch(fallback);
+      navigator.clipboard.writeText(text).then(done).catch(fallback);
     } else fallback();
     function fallback() {
       var ta = document.createElement("textarea");
-      ta.value = code; document.body.appendChild(ta); ta.select();
+      ta.value = text; document.body.appendChild(ta); ta.select();
       try { document.execCommand("copy"); done(); } catch (e) {}
       document.body.removeChild(ta);
     }
+  }
+
+  $("copyBtn").addEventListener("click", function () {
+    copyText(S.me.referral_code || "", "Code");
+  });
+
+  $("copyLinkBtn").addEventListener("click", function () {
+    var code = S.me.referral_code || "";
+    copyText(code ? BOT_LINK + "?start=" + code : "", "Link");
   });
 
   $("shareBtn").addEventListener("click", function () {
@@ -875,8 +891,9 @@
     var link = BOT_LINK + "?start=" + code;
     var text = "WCash — watch videos & earn real money 💰\nUse my referral: " + link;
     var url = "https://t.me/share/url?url=" + encodeURIComponent(link) + "&text=" + encodeURIComponent(text);
-    if (TG && TG.openTelegramLink) TG.openTelegramLink(url);
-    else window.open(url, "_blank");
+    var inTg = !!(TG && TG.initData && TG.initData.length);
+    if (inTg && TG.openTelegramLink) TG.openTelegramLink(url);
+    else copyText(link, "Link");
   });
 
   /* ---------------- boot ---------------- */

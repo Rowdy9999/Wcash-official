@@ -527,6 +527,8 @@
           } else {
             toast("That session expired — start a new one.");
             clearInterval(S.wd.tick); S.wd.panel = null; $("watchPanel").innerHTML = "";
+            if (S.me) S.me.active_session = null;
+            renderAll();
           }
         }).catch(function () { b.disabled = false; b.textContent = "I'm done — check status"; toast("Network error."); });
       };
@@ -899,6 +901,15 @@
   /* ---------------- boot ---------------- */
   function renderAll() {
     if (!S.me) return;
+    // Drop a session whose server-side window has passed — otherwise the
+    // expired panel (and "Open running watch") comes back on every render.
+    var a = S.me.active_session;
+    if (a && a.expires_at && new Date(a.expires_at).getTime() < Date.now()) {
+      S.me.active_session = null;
+      S.wd.panel = null;
+      clearInterval(S.wd.tick);
+      $("watchPanel").innerHTML = "";
+    }
     renderHome(); renderEarn(); renderWithdraw(); renderAccount();
   }
 

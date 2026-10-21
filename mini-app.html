@@ -743,10 +743,10 @@
     if (c.withdrawal_enabled && !hasPending) {
       $("wdAvail").textContent = money(m.balance);
 
-      var tiles = (c.withdrawal_amount_tiles || []).filter(function (n) { return Number(n) === 20; });
+      var tiles = (c.withdrawal_amount_tiles || []).map(Number);
       var avail = tiles.filter(function (n) { return n >= c.withdrawal_min && n <= c.withdrawal_max && n <= m.balance; });
-      // Auto-select the first enabled chip (₹20 is the only tile) so the
-      // payout-details box is revealed without an extra tap.
+      // Auto-select the first enabled chip so the payout-details box is
+      // revealed without an extra tap.
       if (avail.length && (!WD_STATE.amount || avail.indexOf(WD_STATE.amount) < 0)) WD_STATE.amount = avail[0];
       if (!avail.length) WD_STATE.amount = null;
       $("amtChips").innerHTML = tiles.map(function (n) {

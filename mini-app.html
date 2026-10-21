@@ -618,7 +618,6 @@
     $("watchMeta").textContent = c.watch_cooldown + "s · " + c.watch_daily_limit + "/day";
     var ws = $("watchStart");
     if (S.me.dev_failed) { ws.disabled = true; ws.textContent = "Tasks locked on this device"; }
-    else if (S.me.needs_verify) { ws.disabled = true; ws.textContent = "Verify device in the bot first"; }
     else if (!c.watch_enabled) { ws.disabled = true; ws.textContent = "Watch & Earn disabled"; }
     else if (S.me.active_session && S.me.active_session.kind === "watch") {
       ws.disabled = false; ws.textContent = "Open running watch →";
